@@ -2,51 +2,6 @@ import path from "node:path";
 import type { IncomingMessage } from "node:http";
 import type { Plugin, ViteDevServer } from "vite";
 
-interface RouteEntry {
-  pattern: string[];
-  modulePath: string;
-}
-
-// Mirrors Vercel's file-based /api routing. Keep in sync with the api/ directory.
-const routes: RouteEntry[] = [
-  { pattern: ["api", "health"], modulePath: "api/health.ts" },
-  { pattern: ["api", "exercises"], modulePath: "api/exercises/index.ts" },
-  { pattern: ["api", "exercises", ":id"], modulePath: "api/exercises/[id].ts" },
-  { pattern: ["api", "templates"], modulePath: "api/templates/index.ts" },
-  { pattern: ["api", "templates", "activate"], modulePath: "api/templates/activate.ts" },
-  { pattern: ["api", "home"], modulePath: "api/home.ts" },
-  { pattern: ["api", "sessions"], modulePath: "api/sessions/index.ts" },
-  { pattern: ["api", "sessions", "active"], modulePath: "api/sessions/active.ts" },
-  { pattern: ["api", "sessions", ":id"], modulePath: "api/sessions/[id]/index.ts" },
-  { pattern: ["api", "sessions", ":id", "sets"], modulePath: "api/sessions/[id]/sets/index.ts" },
-  {
-    pattern: ["api", "sessions", ":id", "sets", ":setId"],
-    modulePath: "api/sessions/[id]/sets/[setId].ts",
-  },
-  { pattern: ["api", "records"], modulePath: "api/records.ts" },
-  { pattern: ["api", "recommendations", ":exerciseId"], modulePath: "api/recommendations/[exerciseId].ts" },
-];
-
-function matchRoute(pathname: string): { modulePath: string; params: Record<string, string> } | null {
-  const segments = pathname.split("/").filter(Boolean);
-  for (const route of routes) {
-    if (route.pattern.length !== segments.length) continue;
-    const params: Record<string, string> = {};
-    let ok = true;
-    for (let i = 0; i < route.pattern.length; i++) {
-      const p = route.pattern[i];
-      if (p.startsWith(":")) {
-        params[p.slice(1)] = decodeURIComponent(segments[i]);
-      } else if (p !== segments[i]) {
-        ok = false;
-        break;
-      }
-    }
-    if (ok) return { modulePath: route.modulePath, params };
-  }
-  return null;
-}
-
 async function readJsonBody(req: IncomingMessage): Promise<unknown> {
   const method = req.method ?? "GET";
   if (method === "GET" || method === "HEAD" || method === "DELETE") return undefined;
@@ -65,8 +20,9 @@ async function readJsonBody(req: IncomingMessage): Promise<unknown> {
 /**
  * Dev-only middleware emulating Vercel's serverless function runtime, since
  * Vite's dev server has no native concept of /api/*.ts functions — it would
- * otherwise just serve them as raw transformed source. Production deploys
- * still rely on Vercel's own routing; this only exists for `npm run dev`.
+ * otherwise just serve them as raw transformed source. Loads the same catch-all
+ * router used in production (api/[...path].ts) so there's one source of truth
+ * for routing, not two tables that can drift out of sync.
  */
 export function devApiPlugin(): Plugin {
   return {
@@ -77,12 +33,11 @@ export function devApiPlugin(): Plugin {
         if (!req.url || !req.url.startsWith("/api/")) return next();
 
         const url = new URL(req.url, "http://localhost");
-        const match = matchRoute(url.pathname);
-        if (!match) return next();
+        const segments = url.pathname.replace(/^\/api\//, "").split("/").filter(Boolean);
 
         try {
           const body = await readJsonBody(req);
-          const query: Record<string, string> = { ...match.params };
+          const query: Record<string, unknown> = { path: segments };
           for (const [key, value] of url.searchParams.entries()) query[key] = value;
 
           let statusCode = 200;
@@ -103,7 +58,7 @@ export function devApiPlugin(): Plugin {
             },
           };
 
-          const modulePath = path.resolve(__dirname, match.modulePath);
+          const modulePath = path.resolve(__dirname, "api/[...path].ts");
           const mod = await server.ssrLoadModule(modulePath);
           const handler = mod.default as (req: unknown, res: unknown) => Promise<void> | void;
           await handler({ method: req.method, query, body, headers: req.headers }, mockRes);

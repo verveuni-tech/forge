@@ -19,9 +19,13 @@ npm run dev
 
 `npm run dev` works without `DATABASE_URL` set — every screen that hits `/api/*` degrades to a clear "connect your database" state instead of crashing. Once `DATABASE_URL` is set, restart the dev server to pick it up.
 
+### API routing
+
+All of `/api/*` is served by a single Vercel function, [`api/[...path].ts`](api/[...path].ts), which manually dispatches to handlers in `api/_handlers/` by matching path segments. This is deliberate: Vercel's Hobby plan caps a deployment at 12 Serverless Functions, and one file per route blew past that. `api/_handlers/*` and `api/_lib/*` are excluded from Vercel's automatic routing (leading underscore), so only the catch-all counts against the limit. Add a new endpoint by adding a handler file under `_handlers/` and registering it in the `routes` array in `api/[...path].ts` — don't add new top-level files directly under `api/`.
+
 ### Dev-only API emulation
 
-Vite has no native concept of Vercel's `/api/*.ts` serverless functions. [`dev-api-plugin.ts`](dev-api-plugin.ts) is a dev-only Vite middleware that loads and executes the real handlers under `npm run dev`, so local development matches production routing. It mirrors the `api/` directory structure — update its route table when adding a new endpoint. Production deploys (Vercel) use their own native routing and don't touch this file.
+Vite has no native concept of Vercel's `/api/*.ts` serverless functions. [`dev-api-plugin.ts`](dev-api-plugin.ts) is a dev-only Vite middleware that loads and executes `api/[...path].ts` under `npm run dev`, so local development matches production routing exactly — same catch-all, same route table, no separate list to keep in sync. Production deploys (Vercel) use their own native routing and don't touch this file.
 
 ## Scripts
 
@@ -51,4 +55,6 @@ Places primitives in `src/components/ui`. Domain-specific components (WorkoutCar
 - `src/lib/recommendation-engine` — pure progressive-overload logic, no DB/UI dependency
 - `src/store` — Zustand (active workout session state only; everything else is server state via TanStack Query)
 - `src/db` — Drizzle schema, Neon client, seed script
-- `api` — Vercel serverless functions, one file per route; shared helpers in `api/_lib`
+- `api/[...path].ts` — the one Vercel function, routes to `api/_handlers/*`
+- `api/_handlers` — one file per endpoint (excluded from Vercel's auto-routing)
+- `api/_lib` — shared db client, error handling, zod schemas, recommendation/records helpers
