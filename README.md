@@ -1,21 +1,54 @@
-# React + TypeScript + Vite + shadcn/ui
+# Forge
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+The easiest workout tracker that thinks like an experienced gym partner. See [Forge.md](Forge.md) for the full product spec and design language, and [ROADMAP.md](ROADMAP.md) for what's built vs. planned.
 
-## Adding components
+## Stack
 
-To add components to your app, run the following command:
+Vite + React 19 + TypeScript, Tailwind v4 (CSS-native theming, no `tailwind.config.*`), shadcn/ui on Base UI (`base-maia` style), hugeicons, React Router 8, Zustand, TanStack Query, Drizzle ORM + Neon Postgres, Vercel serverless functions under `/api`.
+
+## Setup
 
 ```bash
-npx shadcn@latest add button
+npm install
+cp .env.example .env   # add your Neon DATABASE_URL
+npm run db:generate    # generate SQL migrations from src/db/schema.ts
+npm run db:push        # apply schema to your Neon database
+npm run db:seed        # seed exercise library + workout split templates
+npm run dev
 ```
 
-This will place the ui components in the `src/components` directory.
+`npm run dev` works without `DATABASE_URL` set — every screen that hits `/api/*` degrades to a clear "connect your database" state instead of crashing. Once `DATABASE_URL` is set, restart the dev server to pick it up.
 
-## Using components
+### Dev-only API emulation
 
-To use the components in your app, import them as follows:
+Vite has no native concept of Vercel's `/api/*.ts` serverless functions. [`dev-api-plugin.ts`](dev-api-plugin.ts) is a dev-only Vite middleware that loads and executes the real handlers under `npm run dev`, so local development matches production routing. It mirrors the `api/` directory structure — update its route table when adding a new endpoint. Production deploys (Vercel) use their own native routing and don't touch this file.
 
-```tsx
-import { Button } from "@/components/ui/button"
+## Scripts
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the dev server (Vite + emulated `/api`) |
+| `npm run build` | Typecheck (`tsc -b`) then production build |
+| `npm run typecheck` | Typecheck only, across app/api/node project references |
+| `npm run lint` | ESLint |
+| `npm run db:generate` | Generate SQL migrations from the Drizzle schema (no live DB needed) |
+| `npm run db:push` | Push the schema to your Neon database |
+| `npm run db:seed` | Seed exercises + workout templates (requires `DATABASE_URL`) |
+
+## Adding shadcn components
+
+```bash
+npx shadcn@latest add <component>
 ```
+
+Places primitives in `src/components/ui`. Domain-specific components (WorkoutCard, RecommendationPanel, CoachBubble, etc. — see Forge.md Section 10) live in `src/components/forge` instead; prefer those over generic `ui/*` primitives for anything workout-related.
+
+## Project layout
+
+- `src/pages` — route components, one folder per screen
+- `src/components/forge` — domain components with their own silhouettes (never generic rounded-rectangle cards)
+- `src/components/ui` — shadcn primitives
+- `src/lib/recommendation-engine` — pure progressive-overload logic, no DB/UI dependency
+- `src/store` — Zustand (active workout session state only; everything else is server state via TanStack Query)
+- `src/db` — Drizzle schema, Neon client, seed script
+- `api` — Vercel serverless functions, one file per route; shared helpers in `api/_lib`

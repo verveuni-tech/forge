@@ -1,0 +1,61 @@
+/* Forge Geometry System (forge.md Section 5/6): every major component gets its
+   own silhouette, not a generic rounded rectangle. These are shape utilities,
+   layered on top of the token system in index.css. */
+
+.shape-workout-card {
+  --clip-corner: 24px;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--clip-corner)),
+    calc(100% - var(--clip-corner)) 100%,
+    0 100%
+  );
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-surface);
+}
+
+.shape-capsule {
+  border-radius: var(--radius-pill);
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  box-shadow: var(--shadow-glass);
+}
+
+.shape-coach-bubble {
+  --tail-size: 10px;
+  position: relative;
+  border-radius: var(--radius-2xl);
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  box-shadow: var(--shadow-glass);
+}
+
+.shape-coach-bubble::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  bottom: calc(var(--tail-size) * -1 + 1px);
+  width: var(--tail-size);
+  height: var(--tail-size);
+  background: var(--color-glass);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  border-bottom-left-radius: 3px;
+}
+
+.shape-stat-hex {
+  clip-path: polygon(8% 0, 92% 0, 100% 20%, 100% 100%, 0 100%, 0 20%);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-surface);
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
