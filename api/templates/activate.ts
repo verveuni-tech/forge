@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { eq } from "drizzle-orm";
-import { db, schema } from "../_lib/db";
-import { methodGuard, withErrorHandling } from "../_lib/http";
-import { activateTemplateSchema, parseBody } from "../_lib/schemas";
+import { db, schema } from "../_lib/db.js";
+import { methodGuard, withErrorHandling } from "../_lib/http.js";
+import { activateTemplateSchema, parseBody } from "../_lib/schemas.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (!methodGuard(req, res, ["POST"])) return;

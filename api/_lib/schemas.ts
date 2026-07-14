@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { HttpError } from "./http";
+import { HttpError } from "./http.js";
 
 export const muscleGroupSchema = z.enum([
   "chest",

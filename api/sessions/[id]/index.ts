@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { asc, eq } from "drizzle-orm";
-import { db, schema } from "../../_lib/db";
-import { HttpError, methodGuard, withErrorHandling } from "../../_lib/http";
-import { finishSessionSchema, parseBody } from "../../_lib/schemas";
-import { recomputePersonalRecords } from "../../_lib/records";
-import { refreshExerciseProgressState } from "../../_lib/recommendation";
+import { db, schema } from "../../_lib/db.js";
+import { HttpError, methodGuard, withErrorHandling } from "../../_lib/http.js";
+import { finishSessionSchema, parseBody } from "../../_lib/schemas.js";
+import { recomputePersonalRecords } from "../../_lib/records.js";
+import { refreshExerciseProgressState } from "../../_lib/recommendation.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "GET") return getSession(req, res);

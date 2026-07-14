@@ -1,4 +1,4 @@
-import type { PerformedSession, PerformedSet } from "./types";
+import type { PerformedSession, PerformedSet } from "./types.js";
 
 function workingSets(session: PerformedSession): PerformedSet[] {
   return session.sets.filter((s) => !s.isWarmup);

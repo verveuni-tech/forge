@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { and, asc, desc, eq, lt } from "drizzle-orm";
-import { db, schema } from "../_lib/db";
-import { HttpError, methodGuard, withErrorHandling } from "../_lib/http";
-import { parseBody, startSessionSchema } from "../_lib/schemas";
-import { getRecommendationForExercise } from "../_lib/recommendation";
+import { db, schema } from "../_lib/db.js";
+import { HttpError, methodGuard, withErrorHandling } from "../_lib/http.js";
+import { parseBody, startSessionSchema } from "../_lib/schemas.js";
+import { getRecommendationForExercise } from "../_lib/recommendation.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "POST") return startSession(req, res);

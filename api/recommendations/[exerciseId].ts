@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { HttpError, methodGuard, withErrorHandling } from "../_lib/http";
-import { getRecommendationForExercise } from "../_lib/recommendation";
+import { HttpError, methodGuard, withErrorHandling } from "../_lib/http.js";
+import { getRecommendationForExercise } from "../_lib/recommendation.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (!methodGuard(req, res, ["GET"])) return;

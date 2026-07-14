@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
-import { db, schema } from "./db";
-import { estimateOneRepMax } from "../../src/lib/recommendation-engine";
+import { db, schema } from "./db.js";
+import { estimateOneRepMax } from "../../src/lib/recommendation-engine/index.js";
 
 interface CandidateSet {
   exerciseId: string;

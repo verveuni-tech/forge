@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { db } from "./index";
-import { exercises, workoutTemplates, workoutTemplateExercises } from "./schema";
+import { db } from "./index.js";
+import { exercises, workoutTemplates, workoutTemplateExercises } from "./schema.js";
 
 type MuscleGroup = "chest" | "back" | "legs" | "shoulders" | "arms" | "core";
 

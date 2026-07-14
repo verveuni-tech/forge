@@ -3,13 +3,14 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.api.tsbuildinfo",
     "target": "es2023",
     "lib": ["ES2023"],
-    "module": "esnext",
+    "module": "nodenext",
     "types": ["node"],
     "skipLibCheck": true,
 
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    /* Node ESM mode — matches Vercel's serverless function runtime, which requires
+       explicit .js extensions on relative imports. Not "bundler" like the app/node
+       configs, because this code actually runs under Node's native ESM loader. */
+    "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,

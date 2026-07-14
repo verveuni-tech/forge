@@ -1,9 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { asc, desc, eq } from "drizzle-orm";
 import { differenceInCalendarDays, isSameDay, startOfWeek } from "date-fns";
-import { db, schema } from "./_lib/db";
-import { methodGuard, withErrorHandling } from "./_lib/http";
-import { getRecommendationForExercise } from "./_lib/recommendation";
+import { db, schema } from "./_lib/db.js";
+import { methodGuard, withErrorHandling } from "./_lib/http.js";
+import { getRecommendationForExercise } from "./_lib/recommendation.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (!methodGuard(req, res, ["GET"])) return;

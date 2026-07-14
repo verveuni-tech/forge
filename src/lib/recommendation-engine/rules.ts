@@ -1,5 +1,5 @@
-import { detectPlateau } from "./plateau-detection";
-import type { ExerciseTargets, PerformedSession, Recommendation } from "./types";
+import { detectPlateau } from "./plateau-detection.js";
+import type { ExerciseTargets, PerformedSession, Recommendation } from "./types.js";
 
 function roundToIncrement(weight: number, increment: number): number {
   return Math.round(weight / increment) * increment;

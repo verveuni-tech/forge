@@ -1,2 +1,2 @@
-export { db } from "../../src/db";
-export * as schema from "../../src/db/schema";
+export { db } from "../../src/db/index.js";
+export * as schema from "../../src/db/schema.js";

@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { and, asc, ilike, eq } from "drizzle-orm";
-import { db, schema } from "../_lib/db";
-import { methodGuard, withErrorHandling } from "../_lib/http";
-import { muscleGroupSchema } from "../_lib/schemas";
+import { db, schema } from "../_lib/db.js";
+import { methodGuard, withErrorHandling } from "../_lib/http.js";
+import { muscleGroupSchema } from "../_lib/schemas.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (!methodGuard(req, res, ["GET"])) return;

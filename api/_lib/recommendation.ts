@@ -1,12 +1,12 @@
 import { and, asc, eq } from "drizzle-orm";
-import { db, schema } from "./db";
+import { db, schema } from "./db.js";
 import {
   detectPlateau,
   recommendNextSession,
   type ExerciseTargets,
   type PerformedSession,
   type Recommendation,
-} from "../../src/lib/recommendation-engine";
+} from "../../src/lib/recommendation-engine/index.js";
 
 function weightIncrementFor(equipment: string | null): number {
   return equipment === "bodyweight" ? 0 : 2.5;

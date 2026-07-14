@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { eq } from "drizzle-orm";
-import { db, schema } from "../_lib/db";
-import { HttpError, methodGuard, withErrorHandling } from "../_lib/http";
-import { getExerciseHistory } from "../_lib/recommendation";
+import { db, schema } from "../_lib/db.js";
+import { HttpError, methodGuard, withErrorHandling } from "../_lib/http.js";
+import { getExerciseHistory } from "../_lib/recommendation.js";
 
 export default withErrorHandling(async (req: VercelRequest, res: VercelResponse) => {
   if (!methodGuard(req, res, ["GET"])) return;
